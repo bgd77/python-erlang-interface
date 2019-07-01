@@ -24,8 +24,8 @@ def findInSubdirectory(filename, subdirectory=''):
 otp_dir = findInSubdirectory('erl_interface.h', getSearchDir())
 
 if otp_dir == None:
-    print 'Cannot find Erlang/OTP directory.'
-    print 'You need to install Erlang/OTP.'
+    print('Cannot find Erlang/OTP directory.')
+    print('You need to install Erlang/OTP.')
     exit(1)
 
 include_dirs = [otp_dir + 'include/']
