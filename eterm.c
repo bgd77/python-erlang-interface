@@ -14,7 +14,7 @@ Eterm_dealloc(EtermObject *self)
 			erl_free_term(self->term);
 		}
 	}
-	self->ob_type->tp_free((PyObject*)self);
+	//self->ob_type->tp_free((PyObject*)self);
 }
 
 static PyObject *
@@ -68,26 +68,6 @@ static PyGetSetDef Eterm_getseters[] = {
 	{"type", (getter)Eterm_gettype, NULL, NULL, NULL},
 	{NULL}  /* Sentinel */
 };
-
-static PyObject *
-Eterm_print_term(EtermObject *self, PyObject *args)
-{
-	int ret = 0;
-	PyObject *stream = NULL;
-	FILE *fp = stdout;
-
-	if (!PyArg_ParseTuple(args, "|O", &stream)){
-		return NULL;
-	}
-	if(stream && PyFile_Check(stream)){
-		fp = PyFile_AsFile(stream);
-	}
-	if(self->term){
-		ret = erl_print_term(fp, self->term);
-		fprintf(fp, "\n");
-	}
-	return Py_BuildValue("i", ret);
-}
 
 static PyObject *
 Eterm_is_integer(EtermObject *self)
@@ -244,9 +224,6 @@ Eterm_is_unsigned_longlong(EtermObject *self)
 #endif
 
 static PyMethodDef Eterm_methods[] = {
-	{"print_term", (PyCFunction)Eterm_print_term, METH_VARARGS,
-     "print EtermObject"
-    },
 	{"is_integer", (PyCFunction)Eterm_is_integer, METH_NOARGS, NULL},
 	{"is_unsigned_integer", (PyCFunction)Eterm_is_unsigned_integer,
 	 METH_NOARGS, NULL},
@@ -283,14 +260,13 @@ Eterm_str(PyObject *self)
 	ei_x_new(&buf);
 	ei_x_encode_term(&buf, eterm->term);
 	ei_s_print_term(&s, buf.buff, &i);
-	ret = PyString_FromString(s);
+	ret = PyUnicode_FromString(s);
 	free(s);
 	return ret;
 }
 
 PyTypeObject EtermType = {
-	PyObject_HEAD_INIT(NULL)
-	0,                         /*ob_size*/
+	PyVarObject_HEAD_INIT(NULL, 0) /*ob_size*/
 	"pyerl.Eterm",             /*tp_name*/
 	sizeof(EtermObject),       /*tp_basicsize*/
 	0,                         /*tp_itemsize*/

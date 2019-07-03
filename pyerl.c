@@ -44,7 +44,7 @@ pyerl_connect_init(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	ret = erl_connect_init(number, cookie, creation);
-	return PyInt_FromLong(ret);
+	return PyLong_FromLong(ret);
 }
 
 static PyObject *
@@ -62,7 +62,7 @@ pyerl_connect_xinit(PyObject *self, PyObject *args)
 	}
 	ia.s_addr = inet_addr(addr);
 	ret = erl_connect_xinit(host ,alive, node, &ia, cookie, creation);
-	return PyInt_FromLong(ret);
+	return PyLong_FromLong(ret);
 }
 
 static PyObject *
@@ -74,7 +74,7 @@ pyerl_connect(PyObject *self, PyObject *args)
 	if(!PyArg_ParseTuple(args, "s", &node))
 		return NULL;
 	ret = erl_connect(node);
-	return PyInt_FromLong(ret);
+	return PyLong_FromLong(ret);
 }
 
 static PyObject *
@@ -88,7 +88,7 @@ pyerl_xconnect(PyObject *self, PyObject *args)
 		return NULL;
 	ia.s_addr = inet_addr(addr);
 	ret = erl_xconnect(&ia, alive);
-	return PyInt_FromLong(ret);
+	return PyLong_FromLong(ret);
 }
 
 static PyObject *
@@ -100,7 +100,7 @@ pyerl_close_connection(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	ret = erl_close_connection(fd);
-	return PyInt_FromLong(ret);
+	return PyLong_FromLong(ret);
 }
 
 static PyObject *
@@ -153,7 +153,7 @@ pyerl_send(PyObject *self, PyObject *args)
 	eto = (EtermObject *)to;
 	emsg = (EtermObject *)msg;
 	ret = erl_send(fd, eto->term, emsg->term);
-	return PyInt_FromLong(ret);
+	return PyLong_FromLong(ret);
 }
 
 static PyObject *
@@ -177,7 +177,7 @@ pyerl_reg_send(PyObject *self, PyObject *args)
 	}
 	emsg = (EtermObject *)msg;
 	ret = erl_reg_send(fd, to, emsg->term);
-	return PyInt_FromLong(ret);
+	return PyLong_FromLong(ret);
 }
 
 static PyObject *
@@ -214,7 +214,7 @@ pyerl_publish(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	ret = erl_publish(port);
-	return PyInt_FromLong(ret);
+	return PyLong_FromLong(ret);
 }
 
 static PyObject *
@@ -226,7 +226,7 @@ pyerl_unpublish(PyObject *self, PyObject *args)
 	if(!PyArg_ParseTuple(args, "s", &alive))
 		return NULL;
 	ret = erl_unpublish(alive);
-	return PyInt_FromLong(ret);
+	return PyLong_FromLong(ret);
 }
 
 static PyObject *
@@ -266,7 +266,7 @@ pyerl_thiscreation(PyObject *self, PyObject *args)
 {
 	int ret;
 	ret = erl_thiscreation();
-	return PyInt_FromLong(ret);
+	return PyLong_FromLong(ret);
 }
 
 
@@ -800,35 +800,6 @@ pyerl_mk_ulonglong(PyObject *self, PyObject *args)
 #endif
 
 static PyObject *
-pyerl_print_term(PyObject *self, PyObject *args)
-{
-	int ret = 0;
-	PyObject *stream;
-	PyObject *term;
-	EtermObject *eterm;
-	FILE *fp = stdout;
-
-	if(!PyArg_ParseTuple(args, "OO", &stream, &term)){
-		return NULL;
-	}
-	if(!PyFile_Check(stream)){
-		return NULL;
-	}
-	fp = PyFile_AsFile(stream);
-	if(!PyObject_TypeCheck(term, &EtermType)){
-		return NULL;
-	}
-	eterm = (EtermObject *)term;
-	if(!eterm->term){
-		PyErr_SetString(PyExc_TypeError, "Invalid arguments.");
-		return NULL;
-	}
-	ret = erl_print_term(fp, eterm->term);
-	fprintf(fp, "\n");
-	return PyInt_FromLong(ret);
-}
-
-static PyObject *
 pyerl_size(PyObject *self, PyObject *args)
 {
 	int ret = 0;
@@ -849,7 +820,7 @@ pyerl_size(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	ret = erl_size(eterm->term);
-	return PyInt_FromLong(ret);
+	return PyLong_FromLong(ret);
 }
 
 static PyObject *
@@ -889,7 +860,7 @@ pyerl_term_len(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	ret = erl_term_len(eterm->term);
-	return PyInt_FromLong(ret);
+	return PyLong_FromLong(ret);
 }
 
 static PyMethodDef methods[] = {
@@ -963,7 +934,6 @@ These functions support calling Erlang functions on remote nodes. "},
 	{"mk_ulonglong", pyerl_mk_ulonglong, METH_VARARGS, NULL},
 #endif
 
-	{"print_term", pyerl_print_term, METH_VARARGS, NULL},
 	{"size", pyerl_size, METH_VARARGS, NULL},
 
 	{"eterm_release", pyerl_eterm_release, METH_NOARGS, NULL},
@@ -972,17 +942,30 @@ These functions support calling Erlang functions on remote nodes. "},
 	{NULL, NULL}
 };
 
-void initpyerl(void)
+static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "pyerl",             /* m_name */
+        pyerl_doc,           /* m_doc */
+        -1,                  /* m_size */
+        methods,             /* m_methods */
+        NULL,                /* m_reload */
+        NULL,                /* m_traverse */
+        NULL,                /* m_clear */
+        NULL,                /* m_free */
+    };
+
+PyMODINIT_FUNC
+PyInit_pyerl(void)
 {
 	PyObject *m;
 
 	erl_init(NULL, 0);
 	if (PyType_Ready(&EtermType) < 0)
-		return;
+		return NULL;
 
-	m = Py_InitModule3("pyerl", methods, pyerl_doc);
+	m = PyModule_Create(&moduledef);
 	if (m == NULL)
-		return;
+		return NULL;
 	Py_INCREF(&EtermType);
 	PyModule_AddObject(m, "Eterm", (PyObject *)&EtermType);
 
@@ -1006,10 +989,13 @@ void initpyerl(void)
 	PyModule_AddIntConstant(m, "U_SMALL_BIG", ERL_U_SMALL_BIG);
 	PyModule_AddIntConstant(m, "FUNCTION", ERL_FUNCTION);
 	PyModule_AddIntConstant(m, "BIG", ERL_BIG);
+
 #ifdef ERL_LONGLONG
 	PyModule_AddIntConstant(m, "LONGLONG", ERL_LONGLONG);
 #endif
 #ifdef ERL_U_LONGLONG
 	PyModule_AddIntConstant(m, "U_LONGLONG", ERL_U_LONGLONG);
 #endif
+
+    return m;
 }
