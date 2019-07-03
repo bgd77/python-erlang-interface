@@ -3,7 +3,7 @@
 all: build
 
 build:
-	python setup.py build
+	python3 setup.py build
 	cp build/lib.*/*.so ./
 
 clean:
@@ -11,6 +11,7 @@ clean:
 
 test:
 	./tests/test_pyerl.py
+	./tests/test_rpc.py
 
 sdist:
 	python setup.py sdist
