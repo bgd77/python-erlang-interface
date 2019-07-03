@@ -266,7 +266,7 @@ Eterm_str(PyObject *self)
 }
 
 PyTypeObject EtermType = {
-	PyVarObject_HEAD_INIT(NULL, 0) /*ob_size*/
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"pyerl.Eterm",             /*tp_name*/
 	sizeof(EtermObject),       /*tp_basicsize*/
 	0,                         /*tp_itemsize*/
