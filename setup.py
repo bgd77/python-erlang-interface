@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from distutils.core import setup, Extension
-from os import path
 import os
 import re
 
