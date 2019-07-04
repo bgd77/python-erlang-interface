@@ -14,7 +14,7 @@ Eterm_dealloc(EtermObject *self)
 			erl_free_term(self->term);
 		}
 	}
-	//self->ob_type->tp_free((PyObject*)self);
+	Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyObject *
