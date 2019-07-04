@@ -4,7 +4,7 @@ PyErl
 PyErl is Erlang Interface for Python. which help you integrate
 programs written in Python and Erlang.
 
-This is a fork of https://github.com/hamano/python-erlang-interface that adds Python 3 support. More precisely Python 3.6.8 was used.
+This is a fork of https://github.com/hamano/python-erlang-interface that adds Python 3 support. More precisely Python 3.6.8 was used. For the migration this excellent guide was used: http://python3porting.com/cextensions.html
 
 Please note that the **print_term** methods were removed because of changes to the C API in Python 3.
 
