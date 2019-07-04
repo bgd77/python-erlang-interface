@@ -1,12 +1,14 @@
 PyErl
 =====
 
-[![PyPI](https://img.shields.io/pypi/v/PyErl.svg)](https://pypi.python.org/pypi/PyErl/)
-[![Build Status](https://travis-ci.org/hamano/python-erlang-interface.svg?branch=master)](https://travis-ci.org/hamano/python-erlang-interface)
-[![GitHub license](https://img.shields.io/github/license/hamano/python-erlang-interface.svg)]()
-
 PyErl is Erlang Interface for Python. which help you integrate
 programs written in Python and Erlang.
+
+This is a fork of https://github.com/hamano/python-erlang-interface that adds Python 3 support. More precisely Python 3.6.8 was used.
+
+Please note that the **print_term** methods were removed because of changes to the C API in Python 3.
+
+While the tests pass and for me the module works ok, I cannot guarantee that all is fine, so use it at your own risk.
 
 DEPENDENCIES
 ------------
@@ -60,6 +62,8 @@ pyerl.close_connection(sock);
 print eterm
 ~~~
 
-AUTHER
+AUTHOR
 ------
-Tsukasa Hamano <code@cuspy.org>
+Original author: Tsukasa Hamano <code@cuspy.org>
+
+Python 3 update: https://github.com/bgd77

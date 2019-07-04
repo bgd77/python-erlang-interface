@@ -32,15 +32,15 @@ library_dirs = [otp_dir + 'lib/']
 
 setup(name = "PyErl",
       version = "0.6",
-      description = "Erlang Interface for Python",
+      description = "Erlang Interface for Python 3",
       long_description = '''
-PyErl is Erlang Interface for Python. which help you integrate
-programs written in Python and Erlang.
+PyErl is Erlang Interface for Python 3, which help you integrate
+programs written in Python 3 and Erlang.
 ''',
       author = "Tsukasa Hamano",
       author_email = "code@cuspy.org",
-      url="http://github.com/hamano/python-erlang-interface",
-      download_url="http://pypi.python.org/pypi/PyErl/",
+      update="Bogdan Sacarea",
+      url="http://github.com/bgd77/python-erlang-interface",
       license="MPL",
       ext_modules = [
         Extension(
@@ -52,7 +52,7 @@ programs written in Python and Erlang.
             )
         ],
       classifiers = [
-        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Erlang',
         'Topic :: Software Development :: Libraries :: Python Modules',
         ],
